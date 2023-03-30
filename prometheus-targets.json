@@ -1,16 +1,16 @@
 [
   {
     "labels": {
-      "package": "prysm-prater.dnp.dappnode.eth",
-      "service": "beacon-chain.prysm-prater.dappnode"
+      "package": "prysm-siberiumlab.dnp.dappnode.eth",
+      "service": "beacon-chain.prysm-siberiumlab.dappnode"
     },
-    "targets": ["beacon-chain.prysm-prater.dappnode:8080"]
+    "targets": ["beacon-chain.prysm-siberiumlab.dappnode:8080"]
   },
   {
     "labels": {
-      "package": "prysm-prater.dnp.dappnode.eth",
-      "service": "validator.prysm-prater.dappnode"
+      "package": "prysm-siberiumlab.dnp.dappnode.eth",
+      "service": "validator.prysm-siberiumlab.dappnode"
     },
-    "targets": ["validator.prysm-prater.dappnode:8081"]
+    "targets": ["validator.prysm-siberiumlab.dappnode:8081"]
   }
 ]

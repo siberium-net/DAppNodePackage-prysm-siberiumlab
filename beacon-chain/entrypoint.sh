@@ -6,27 +6,27 @@ else
   EXTRA_OPTS="--genesis-state=/genesis.ssz ${EXTRA_OPTS}"
 fi
 
-case $_DAPPNODE_GLOBAL_EXECUTION_CLIENT_PRATER in
-"goerli-geth.dnp.dappnode.eth")
-  HTTP_ENGINE="http://goerli-geth.dappnode:8551"
+case $_DAPPNODE_GLOBAL_EXECUTION_CLIENT_SIBERIUMLAB in
+"siberiumlab-geth.dnp.dappnode.eth")
+  HTTP_ENGINE="http://siberiumlab-geth.dappnode:8551"
   ;;
-"goerli-nethermind.dnp.dappnode.eth")
-  HTTP_ENGINE="http://goerli-nethermind.dappnode:8551"
+"siberiumlab-nethermind.dnp.dappnode.eth")
+  HTTP_ENGINE="http://siberiumlab-nethermind.dappnode:8551"
   ;;
-"goerli-besu.dnp.dappnode.eth")
-  HTTP_ENGINE="http://goerli-besu.dappnode:8551"
+"siberiumlab-besu.dnp.dappnode.eth")
+  HTTP_ENGINE="http://siberiumlab-besu.dappnode:8551"
   ;;
-"goerli-erigon.dnp.dappnode.eth")
-  HTTP_ENGINE="http://goerli-erigon.dappnode:8551"
+"siberiumlab-erigon.dnp.dappnode.eth")
+  HTTP_ENGINE="http://siberiumlab-erigon.dappnode:8551"
   ;;
 *)
-  echo "Unknown value for _DAPPNODE_GLOBAL_EXECUTION_CLIENT_PRATER: $_DAPPNODE_GLOBAL_EXECUTION_CLIENT_PRATER"
-  HTTP_ENGINE=$_DAPPNODE_GLOBAL_EXECUTION_CLIENT_PRATER
+  echo "Unknown value for _DAPPNODE_GLOBAL_EXECUTION_CLIENT_SIBERIUMLAB: $_DAPPNODE_GLOBAL_EXECUTION_CLIENT_SIBERIUMLAB"
+  HTTP_ENGINE=$_DAPPNODE_GLOBAL_EXECUTION_CLIENT_SIBERIUMLAB
   ;;
 esac
 
 # MEVBOOST: https://hackmd.io/@prysmaticlabs/BJeinxFsq
-if [ -n "$_DAPPNODE_GLOBAL_MEVBOOST_PRATER" ] && [ "$_DAPPNODE_GLOBAL_MEVBOOST_PRATER" == "true" ]; then
+if [ -n "$_DAPPNODE_GLOBAL_MEVBOOST_SIBERIUMLAB" ] && [ "$_DAPPNODE_GLOBAL_MEVBOOST_SIBERIUMLAB" == "true" ]; then
   echo "MEVBOOST is enabled"
   MEVBOOST_URL="http://mev-boost.mev-boost-goerli.dappnode:18550"
   if curl --retry 5 --retry-delay 5 --retry-all-errors "${MEVBOOST_URL}"; then
@@ -41,7 +41,7 @@ exec -c beacon-chain \
   --datadir=/data \
   --rpc-host=0.0.0.0 \
   --accept-terms-of-use \
-  --prater \
+  --chain-id=110011 \
   --grpc-gateway-host=0.0.0.0 \
   --monitoring-host=0.0.0.0 \
   --p2p-tcp-port=$P2P_TCP_PORT \

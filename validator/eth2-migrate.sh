@@ -30,7 +30,7 @@ function ensure_files_exist() {
   # Check if wallet directory exists
   if [ ! -d "${WALLET_DIR}" ]; then
     {
-      echo "${ERROR} wallet directory not found, manual migration required. Please check https://prater-manual-migration.dappnode.io to get more info"
+      echo "${ERROR} wallet directory not found, manual migration required. Please check https://siberiumlab-manual-migration.dappnode.io to get more info"
       empty_validator_volume
       exit 1
     }
@@ -39,7 +39,7 @@ function ensure_files_exist() {
   # Check if wallet password file exists
   if [ ! -f "${WALLETPASSWORD_FILE}" ]; then
     {
-      echo "${ERROR} wallet password file not found, manual migration required. Please check https://prater-manual-migration.dappnode.io to get more info"
+      echo "${ERROR} wallet password file not found, manual migration required. Please check https://siberiumlab-manual-migration.dappnode.io to get more info"
       empty_validator_volume
       exit 1
     }
@@ -58,11 +58,11 @@ function ensure_requirements() {
     --retry 30 \
     --retry-delay 3 \
     --retry-all-errors \
-    http://beacon-chain.prysm-prater.dappnode:3500/eth/v1/beacon/genesis)" == 200 ]; then
+    http://beacon-chain.prysm-siberiumlab.dappnode:3500/eth/v1/beacon/genesis)" == 200 ]; then
     echo "${INFO} web3signer available"
   else
     {
-      echo "${ERROR} beacon-chain not available after 3 minutes, manual migration required. Please check https://prater-manual-migration.dappnode.io to get more info"
+      echo "${ERROR} beacon-chain not available after 3 minutes, manual migration required. Please check https://siberiumlab-manual-migration.dappnode.io to get more info"
       empty_validator_volume
       exit 1
     }
@@ -72,7 +72,7 @@ function ensure_requirements() {
   # Check if web3signer is available: https://consensys.github.io/web3signer/web3signer-eth2.html#tag/Server-Status
   if [ "$(curl -s -X GET \
     -H "Content-Type: application/json" \
-    -H "Host: prysm.migration-prater.dappnode" \
+    -H "Host: prysm.migration-siberiumlab.dappnode" \
     --write-out '%{http_code}' \
     --silent \
     --output /dev/null \
@@ -83,7 +83,7 @@ function ensure_requirements() {
     echo "${INFO} web3signer available"
   else
     {
-      echo "${ERROR} web3signer not available after 3 minutes, manual migration required. Please check https://prater-manual-migration.dappnode.io to get more info"
+      echo "${ERROR} web3signer not available after 3 minutes, manual migration required. Please check https://siberiumlab-manual-migration.dappnode.io to get more info"
       empty_validator_volume
       exit 1
     }
@@ -108,7 +108,7 @@ function get_public_keys() {
   if VALIDATORS_PUBKEYS="$(validator accounts list \
     --wallet-dir="${WALLET_DIR}" \
     --wallet-password-file="${WALLETPASSWORD_FILE}" \
-    --"${NETWORK}" \
+    --chain-id="$NETWORK_ID" \
     --accept-terms-of-use)"; then
     VALIDATORS_PUBKEYS_ARRAY=($(echo "${VALIDATORS_PUBKEYS}" | grep -o -E '0x[a-zA-Z0-9]{96}'))
     PUBLIC_KEYS_COMMA_SEPARATED=$(echo "${VALIDATORS_PUBKEYS_ARRAY[*]}" | tr ' ' ',')
@@ -123,7 +123,7 @@ function get_public_keys() {
     fi
   else
     {
-      echo "${ERROR} validator accounts list failed, manual migration required. Please check https://prater-manual-migration.dappnode.io to get more info"
+      echo "${ERROR} validator accounts list failed, manual migration required. Please check https://siberiumlab-manual-migration.dappnode.io to get more info"
       empty_validator_volume
       exit 1
     }
@@ -139,9 +139,9 @@ function export_keystores_walletpassowrd() {
     --backup-dir="${BACKUP_DIR}" \
     --backup-password-file="${WALLETPASSWORD_FILE}" \
     --backup-public-keys="${PUBLIC_KEYS_COMMA_SEPARATED}" \
-    --"${NETWORK}" \
+    --chain-id="$NETWORK_ID" \
     --accept-terms-of-use || {
-    echo "${ERROR} failed to export keystores, manual migration required. Please check https://prater-manual-migration.dappnode.io to get more info"
+    echo "${ERROR} failed to export keystores, manual migration required. Please check https://siberiumlab-manual-migration.dappnode.io to get more info"
     empty_validator_volume
     exit 1
   }
@@ -153,14 +153,14 @@ function export_keystores_walletpassowrd() {
 
   # Copy walletpassword to backup folder
   cp "${WALLETPASSWORD_FILE}" "${BACKUP_WALLETPASSWORD_FILE}" || {
-    echo "${ERROR} failed to export walletpassword.txt, manual migration required. Please check https://prater-manual-migration.dappnode.io to get more info"
+    echo "${ERROR} failed to export walletpassword.txt, manual migration required. Please check https://siberiumlab-manual-migration.dappnode.io to get more info"
     empty_validator_volume
     exit 1
   }
 
   # Unzip keystores
   unzip -d "${BACKUP_KEYSTORES_DIR}" "${BACKUP_ZIP_FILE}" || {
-    echo "${ERROR} failed to unzip keystores, manual migration required. Please check https://prater-manual-migration.dappnode.io to get more info"
+    echo "${ERROR} failed to unzip keystores, manual migration required. Please check https://siberiumlab-manual-migration.dappnode.io to get more info"
     empty_validator_volume
     exit 1
   }
@@ -172,14 +172,14 @@ function export_slashing_protection() {
     --datadir="${WALLET_DIR}" \
     --slashing-protection-export-dir="${BACKUP_DIR}" \
     --accept-terms-of-use || {
-    echo "${ERROR} failed to export slashing protection, manual migration required. Please check https://prater-manual-migration.dappnode.io to get more info"
+    echo "${ERROR} failed to export slashing protection, manual migration required. Please check https://siberiumlab-manual-migration.dappnode.io to get more info"
     empty_validator_volume
     exit 1
   }
 
   # Prune the slashing data to prevent the web3signer from crashing due to timeout
   slashing-prune --source-path "$BACKUP_SLASHING_FILE" --target-path "$BACKUP_SLASHING_FILE_PRUNE" || {
-    echo "${ERROR} failed to export slashing protection, manual migration required. Please check https://prater-manual-migration.dappnode.io to get more info"
+    echo "${ERROR} failed to export slashing protection, manual migration required. Please check https://siberiumlab-manual-migration.dappnode.io to get more info"
     empty_validator_volume
     exit 1
   }
@@ -208,7 +208,7 @@ function import_validators() {
     --retry-connrefused \
     -H "Content-Type: application/json" \
     -H "Accept: application/json" \
-    -H "Host: prysm.migration-prater.dappnode" \
+    -H "Host: prysm.migration-siberiumlab.dappnode" \
     "${WEB3SIGNER_API}"/eth/v1/keystores
 
   echo "${INFO} validators imported"
@@ -217,7 +217,7 @@ function import_validators() {
 # Remove all content except validator.db amd tosaccepted file
 function empty_validator_volume() {
   # Moves tosaccepted file to walletdir
-  mv "/root/.eth2/tosaccepted" "${WALLET_DIR}"/tosaccepted || echo "${WARN} failed to move tosaccepted file, manual migration required. Please check https://prater-manual-migration.dappnode.io to get more info"
+  mv "/root/.eth2/tosaccepted" "${WALLET_DIR}"/tosaccepted || echo "${WARN} failed to move tosaccepted file, manual migration required. Please check https://siberiumlab-manual-migration.dappnode.io to get more info"
   # Removes old --datadir. Not needed anymore
   rm -rf "/root/.eth2" || echo "${WARN} failed to remove /root/.eth2"
   # Removes old validator files: keystores and walletpassword.txt

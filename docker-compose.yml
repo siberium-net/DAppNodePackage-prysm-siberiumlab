@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   beacon-chain:
-    image: "beacon-chain.prysm-prater.dnp.dappnode.eth:1.0.0"
+    image: "beacon-chain.prysm-siberiumlab.dnp.dappnode.eth:1.0.0"
     build:
       context: beacon-chain
       args:
@@ -13,13 +13,13 @@ services:
       - "12503:12503/udp"
     restart: unless-stopped
     environment:
-      CORSDOMAIN: "http://prysm-prater.dappnode"
+      CORSDOMAIN: "http://prysm-siberiumlab.dappnode"
       CHECKPOINT_SYNC_URL: ""
       P2P_TCP_PORT: 13503
       P2P_UDP_PORT: 12503
       EXTRA_OPTS: ""
   validator:
-    image: "validator.prysm-prater.dnp.dappnode.eth:1.0.0"
+    image: "validator.prysm-siberiumlab.dnp.dappnode.eth:1.0.0"
     build:
       context: validator
       dockerfile: Dockerfile
@@ -31,8 +31,8 @@ services:
     restart: unless-stopped
     environment:
       LOG_TYPE: INFO
-      BEACON_RPC_PROVIDER: "beacon-chain.prysm-prater.dappnode:4000"
-      BEACON_RPC_GATEWAY_PROVIDER: "beacon-chain.prysm-prater.dappnode:3500"
+      BEACON_RPC_PROVIDER: "beacon-chain.prysm-siberiumlab.dappnode:4000"
+      BEACON_RPC_GATEWAY_PROVIDER: "beacon-chain.prysm-siberiumlab.dappnode:3500"
       GRAFFITI: validating_from_DAppNode
       EXTRA_OPTS: ""
       FEE_RECIPIENT_ADDRESS: ""
